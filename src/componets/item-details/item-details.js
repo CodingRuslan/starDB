@@ -1,51 +1,52 @@
 import React, { Component } from 'react';
 
-import './person-details.css';
-import SwapiService from "../../services/swapi-servise";
+import './item-details.css';
 import Spinner from "../spiner";
 
-export default class PersonDetails extends Component {
-
-	swapiService = new SwapiService();
+export default class ItemDetails extends Component {
 
 	state = {
-		person: null
+		item: null,
+		image: null
 	};
 
 	componentDidMount() {
-		this.updatePerson();
+		this.updateItem();
 	}
 
 
 	componentDidUpdate(prevProps, prevState, snapshot) {
-		if (this.props.personId !== prevProps.personId) {
-			this.updatePerson();
+		if (this.props.itemId !== prevProps.itemId) {
+			this.updateItem();
 		}
 	}
 
-	updatePerson() {
-		const {personId} = this.props;
-		if (!personId) return;
+	updateItem() {
+		const {itemId, getData, getImageUrl} = this.props;
+		if (!itemId) return;
 
-		this.swapiService.getPerson(personId)
-			.then((person) => {
-				this.setState({person})
+		getData(itemId)
+			.then((item) => {
+				this.setState({
+					item,
+					image: getImageUrl(item)
+				})
 			})
 	};
 
 	render() {
 
-		if (!this.state.person) {
+		if (!this.state.item) {
 			return <Spinner/>
 		}
 
-		const {id, name, gender, birthYear, eyeColor} = this.state.person;
+		const {id, name, gender, birthYear, eyeColor} = this.state.item;
 
 		return (
-			<div className="person-details card">
-				<img className="person-image"
+			<div className="item-details card">
+				<img className="item-image"
 						 alt="image"
-						 src={`https://starwars-visualguide.com/assets/img/characters/${id}.jpg`} />
+						 src={this.state.image} />
 
 				<div className="card-body">
 					<h4>{name}</h4>
